@@ -9,6 +9,29 @@
         <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.min.js"></script>
         <script src="js/script.js"></script>
         <script src="js/calculatescore.js"></script>
+        <style>
+            #removePlayerBtn {
+                background-color: white;
+                color: black;
+                border: 2px solid black;
+            }
+
+            #removePlayerBtn:hover {
+                background-color: black;
+                color: white;
+            }
+
+            #addPlayerBtn {
+                background-color: black;
+                color: white;
+                border: 2px solid black;
+            }
+
+            #addPlayerBtn:hover {
+                background-color: white;
+                color: black;
+            }
+        </style>
     </head>
     <body class="bg-base-100">
         <div class="max-w-7xl mx-auto px-4">
@@ -45,7 +68,11 @@
         </div>
      </div>
     </div>  
-        
+        <div class="flex gap-2 mb-4">
+    <button id="addPlayerBtn" class="btn btn-sm btn-primary">➕ Legg til spelar</button>
+    <button id="removePlayerBtn" class="btn btn-sm btn-error">➖ Fjern spelar</button>
+    <span id="playerCount" class="flex items-center ml-2">Spelarar: 4</span>
+</div>
         <div class="card bg-base-100 shadow-xl mb-8">
                 <div class="card-body">
                     <form id="resultForm">
@@ -58,7 +85,6 @@
                                         <th contenteditable="true">Spelar 2</th>
                                         <th contenteditable="true">Spelar 3</th>
                                         <th contenteditable="true">Spelar 4</th>
-                                        <th contenteditable="true">Spelar 5</th>
                                     </tr>
                                 </thead>
                                 <tbody id="scoreTableBody">

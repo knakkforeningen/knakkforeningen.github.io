@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // lager tabell
 const tbody = document.getElementById('scoreTableBody');
-const numPlayers = 5;
+const numPlayers = 4;
 const numRounds = 5;
 
 for (let round = 1; round <= numRounds; round++) {
@@ -36,21 +36,9 @@ for (let player = 1; player <= numPlayers; player++) {
     sumRow.appendChild(sumCell);
 }
 tbody.appendChild(sumRow);
-
-//validering 
+ 
+//validering : regn ut relsultat
 tbody.addEventListener('input', function(e) {
-    // sjekk at tall ender på 0 eller 5, marker celle rød hvis ikke
-    const cells = tbody.querySelectorAll('[contenteditable]');
-    cells.forEach(cell => {
-        const value = cell.textContent.trim();
-        if (value && !value.endsWith('0') && !value.endsWith('5')) {
-            cell.classList.add('bg-red-200'); //farge her
-        } else {
-            cell.classList.remove('bg-red-200');
-        }
-    });
-
-    // marker spiller med lavest poeng - ignorer 0 poeng
     const sums = new Array(numPlayers).fill(0);
     const rows = tbody.querySelectorAll('tr:not(:last-child)');
     rows.forEach(row => {
@@ -59,24 +47,76 @@ tbody.addEventListener('input', function(e) {
             sums[index] += parseInt(cell.textContent) || 0;
         });
     });
-
+    
+    // Update sum cells (no colors)
     const sumCells = tbody.querySelectorAll('.sum');
-    let minSum = Infinity;
     sumCells.forEach((cell, index) => {
         cell.textContent = sums[index];
-        if (sums[index] > 0) {
-            minSum = Math.min(minSum, sums[index]);
-        }
     });
-
-    sumCells.forEach(cell => {
-        cell.classList.remove('bg-yellow-100');
-        if (parseInt(cell.textContent) === minSum && minSum < Infinity) {
-            cell.classList.add('bg-yellow-100');
-        }
-    });
-})
 });
+
+//legge til eller fjene spillere
+let currentPlayers = numPlayers;
+const maxPlayers = 6;
+const minPlayers = 2;
+
+document.getElementById('addPlayerBtn').addEventListener('click', function() {
+    if (currentPlayers >= maxPlayers) {
+        alert('Maks 6 spelarar!');
+        return;
+    }
+    
+    currentPlayers++;
+    
+    // header
+    const headerRow = document.querySelector('#scoreTable thead tr');
+    const newHeader = document.createElement('th');
+    newHeader.contentEditable = "true";
+    newHeader.textContent = `Spelar ${currentPlayers}`;
+    headerRow.appendChild(newHeader);
+    
+    //
+    const rows = tbody.querySelectorAll('tr:not(:last-child)');
+    rows.forEach(row => {
+        const cell = document.createElement('td');
+        cell.contentEditable = "true";
+        cell.inputMode = "numeric";
+        cell.pattern = "[0-9]*";
+        row.appendChild(cell);
+    });
+    
+    //summere 
+    const sumRow = tbody.querySelector('tr:last-child');
+    const sumCell = document.createElement('td');
+    sumCell.contentEditable = "true";
+    sumCell.className = "sum bg-base-200";
+    sumCell.textContent = "0";
+    sumRow.appendChild(sumCell);
+    
+    document.getElementById('playerCount').textContent = `Spelarar: ${currentPlayers}`;
+});
+
+document.getElementById('removePlayerBtn').addEventListener('click', function() {
+    if (currentPlayers <= minPlayers) {
+        alert('Treng minst 2 spelarar!');
+        return;
+    }
+    
+    // Remove header
+    const headerRow = document.querySelector('#scoreTable thead tr');
+    headerRow.removeChild(headerRow.lastElementChild);
+    
+    const allRows = tbody.querySelectorAll('tr');
+    allRows.forEach(row => {
+        row.removeChild(row.lastElementChild);
+    });
+    
+    currentPlayers--;
+    document.getElementById('playerCount').textContent = `Spelarar: ${currentPlayers}`;
+    });
+});
+
+
 
 //render regler på hovedside markdown 
 fetch('regler/regler.md')
